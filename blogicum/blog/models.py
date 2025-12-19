@@ -1,41 +1,38 @@
 from django.contrib.auth import get_user_model
 from django.db import models
 
+from .constants import MAX_TITLE_LENGTH
+
 
 User = get_user_model()
 
 
-class PublishedAndCreated(models.Model):
+class AbstractPublished(models.Model):
     is_published = models.BooleanField(
+        "Опубликовано",
         default=True,
-        blank=False,
-        verbose_name="Опубликовано",
         help_text="Снимите галочку, чтобы скрыть публикацию."
     )
     created_at = models.DateTimeField(
+        "Добавлено",
         auto_now_add=True,
-        blank=False,
-        verbose_name="Добавлено"
     )
 
     class Meta:
         abstract = True
 
 
-class Category(PublishedAndCreated):
+class Category(AbstractPublished):
     title = models.CharField(
-        max_length=256,
-        blank=False,
-        verbose_name="Заголовок"
+        "Заголовок",
+        max_length=MAX_TITLE_LENGTH,
     )
     description = models.TextField(
-        blank=False,
-        verbose_name="Описание"
+        "Описание"
     )
     slug = models.SlugField(
-        blank=False,
+        "Идентификатор",
         unique=True,
-        verbose_name="Идентификатор",
         help_text="Идентификатор страницы для URL; "
                   "разрешены символы латиницы, "
                   "цифры, дефис и подчёркивание."
@@ -46,14 +43,13 @@ class Category(PublishedAndCreated):
         verbose_name = "категория"
 
     def __str__(self):
-        return self.title
+        return self.title[:20]
 
 
-class Location(PublishedAndCreated):
+class Location(AbstractPublished):
     name = models.CharField(
-        max_length=256,
-        blank=False,
-        verbose_name="Название места"
+        "Название места",
+        max_length=MAX_TITLE_LENGTH,
     )
 
     class Meta:
@@ -61,22 +57,19 @@ class Location(PublishedAndCreated):
         verbose_name = "местоположение"
 
     def __str__(self):
-        return self.name
+        return self.name[:20]
 
 
-class Post(PublishedAndCreated):
+class Post(AbstractPublished):
     title = models.CharField(
-        max_length=256,
-        blank=False,
-        verbose_name="Заголовок"
+        "Заголовок",
+        max_length=MAX_TITLE_LENGTH,
     )
     text = models.TextField(
-        blank=False,
-        verbose_name="Текст"
+        "Текст"
     )
     pub_date = models.DateTimeField(
-        blank=False,
-        verbose_name="Дата и время публикации",
+        "Дата и время публикации",
         help_text="Если установить дату и время в будущем — "
                   "можно делать отложенные публикации."
     )
@@ -85,6 +78,7 @@ class Post(PublishedAndCreated):
         on_delete=models.CASCADE,
         blank=True,
         null=False,
+        related_name='posts',
         verbose_name="Автор публикации"
     )
     location = models.ForeignKey(
@@ -92,19 +86,21 @@ class Post(PublishedAndCreated):
         blank=True,
         null=True,
         on_delete=models.SET_NULL,
+        related_name='posts',
         verbose_name="Местоположение"
     )
     category = models.ForeignKey(
         Category,
-        blank=False,
         null=True,
         on_delete=models.SET_NULL,
+        related_name='posts',
         verbose_name="Категория"
     )
 
     class Meta:
         verbose_name_plural = "Публикации"
         verbose_name = "публикация"
+        ordering = ['-pub_date']
 
     def __str__(self):
-        return self.title
+        return self.title[:20]

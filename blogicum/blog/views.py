@@ -21,7 +21,7 @@ def index(request):
     Функция, которая выводит страницу "Главная" с сортировкой постов.
     От самого нового к старому.
     """
-    posts_list = get_base_post_queryset(Post.objects)[:5]
+    posts_list = get_base_post_queryset(Post.objects)[:N_POSTS_PER_PAGE]
     return render(request, 'blog/index.html', {'post_list': posts_list})
 
 

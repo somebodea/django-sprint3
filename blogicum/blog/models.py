@@ -1,13 +1,13 @@
 from django.contrib.auth import get_user_model
 from django.db import models
 
-from .constants import MAX_TITLE_LENGTH
+from .constants import TEXT_FIELD_LIMIT, LETTERS_LIMIT
 
 
 User = get_user_model()
 
 
-class AbstractPublished(models.Model):
+class PublishedAndCreated(models.Model):
     is_published = models.BooleanField(
         "Опубликовано",
         default=True,
@@ -22,10 +22,10 @@ class AbstractPublished(models.Model):
         abstract = True
 
 
-class Category(AbstractPublished):
+class Category(PublishedAndCreated):
     title = models.CharField(
         "Заголовок",
-        max_length=MAX_TITLE_LENGTH,
+        max_length=TEXT_FIELD_LIMIT,
     )
     description = models.TextField(
         "Описание"
@@ -43,13 +43,13 @@ class Category(AbstractPublished):
         verbose_name = "категория"
 
     def __str__(self):
-        return self.title[:20]
+        return self.title[:LETTERS_LIMIT]
 
 
-class Location(AbstractPublished):
+class Location(PublishedAndCreated):
     name = models.CharField(
         "Название места",
-        max_length=MAX_TITLE_LENGTH,
+        max_length=TEXT_FIELD_LIMIT,
     )
 
     class Meta:
@@ -57,13 +57,13 @@ class Location(AbstractPublished):
         verbose_name = "местоположение"
 
     def __str__(self):
-        return self.name[:20]
+        return self.name[:LETTERS_LIMIT]
 
 
-class Post(AbstractPublished):
+class Post(PublishedAndCreated):
     title = models.CharField(
         "Заголовок",
-        max_length=MAX_TITLE_LENGTH,
+        max_length=TEXT_FIELD_LIMIT,
     )
     text = models.TextField(
         "Текст"
@@ -78,7 +78,7 @@ class Post(AbstractPublished):
         on_delete=models.CASCADE,
         blank=True,
         null=False,
-        related_name='posts',
+        related_name="posts",
         verbose_name="Автор публикации"
     )
     location = models.ForeignKey(
@@ -86,21 +86,21 @@ class Post(AbstractPublished):
         blank=True,
         null=True,
         on_delete=models.SET_NULL,
-        related_name='posts',
+        related_name="posts",
         verbose_name="Местоположение"
     )
     category = models.ForeignKey(
         Category,
         null=True,
         on_delete=models.SET_NULL,
-        related_name='posts',
+        related_name="posts",
         verbose_name="Категория"
     )
 
     class Meta:
         verbose_name_plural = "Публикации"
         verbose_name = "публикация"
-        ordering = ['-pub_date']
+        ordering = ("-pub_date",)
 
     def __str__(self):
-        return self.title[:20]
+        return self.title[:LETTERS_LIMIT]

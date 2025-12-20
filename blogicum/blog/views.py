@@ -5,7 +5,7 @@ from .constants import N_POSTS_PER_PAGE
 from .models import Post, Category
 
 
-def get_base_post_queryset(queryset):
+def filter_by_post(queryset):
     """Фильтрует переданный QuerySet и делает select_related."""
     return queryset.select_related(
         'category', 'location', 'author'
@@ -21,14 +21,14 @@ def index(request):
     Функция, которая выводит страницу "Главная" с сортировкой постов.
     От самого нового к старому.
     """
-    posts_list = get_base_post_queryset(Post.objects)[:N_POSTS_PER_PAGE]
+    posts_list = filter_by_post(Post.objects)[:N_POSTS_PER_PAGE]
     return render(request, 'blog/index.html', {'post_list': posts_list})
 
 
 def post_detail(request, post_id):
     """Функция, которая выводит страницу полного поста."""
     post = get_object_or_404(
-        get_base_post_queryset(Post.objects),
+        filter_by_post(Post.objects),
         id=post_id,
     )
     return render(request, 'blog/detail.html', {'post': post})
@@ -41,7 +41,7 @@ def category_posts(request, category_slug):
         slug=category_slug,
         is_published=True
     )
-    post_list = get_base_post_queryset(category.posts)
+    post_list = filter_by_post(category.posts)
 
     return render(
         request,

@@ -9,6 +9,7 @@ from blog.models import Category, Location, Post
 User = get_user_model()
 
 
+@admin.register(Post)
 class PostAdmin(admin.ModelAdmin):
     list_display = (
         'title',
@@ -25,6 +26,7 @@ class PostAdmin(admin.ModelAdmin):
     list_display_links = ('title', 'author')
 
 
+@admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
     list_display = (
         'title',
@@ -39,6 +41,7 @@ class CategoryAdmin(admin.ModelAdmin):
     list_display_links = ('title',)
 
 
+@admin.register(Location)
 class LocationAdmin(admin.ModelAdmin):
     list_display = (
         'name',
@@ -50,10 +53,6 @@ class LocationAdmin(admin.ModelAdmin):
     search_fields = ('name',)
     list_filter = ('is_published',)
     list_display_links = ('name',)
-
-
-admin.site.register(Category, CategoryAdmin)
-admin.site.register(Location, LocationAdmin)
 
 
 class UserAdmin(BaseUserAdmin):
@@ -70,7 +69,5 @@ class UserAdmin(BaseUserAdmin):
 
 
 admin.site.unregister(User)
-admin.site.unregister(Group)
-
 admin.site.register(User, UserAdmin)
-admin.site.register(Post, PostAdmin)
+admin.site.unregister(Group)

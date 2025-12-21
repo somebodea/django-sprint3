@@ -1,13 +1,13 @@
 from django.contrib.auth import get_user_model
 from django.db import models
 
-from .constants import TEXT_FIELD_LIMIT, LETTERS_LIMIT
+from .constants import CHAR_LIMIT, STR_LIMIT
 
 
 User = get_user_model()
 
 
-class PublishedAndCreated(models.Model):
+class IsPublisheCreaterAtAbstract(models.Model):
     is_published = models.BooleanField(
         "Опубликовано",
         default=True,
@@ -22,10 +22,10 @@ class PublishedAndCreated(models.Model):
         abstract = True
 
 
-class Category(PublishedAndCreated):
+class Category(IsPublisheCreaterAtAbstract):
     title = models.CharField(
         "Заголовок",
-        max_length=TEXT_FIELD_LIMIT,
+        max_length=CHAR_LIMIT,
     )
     description = models.TextField(
         "Описание"
@@ -43,13 +43,13 @@ class Category(PublishedAndCreated):
         verbose_name = "категория"
 
     def __str__(self):
-        return self.title[:LETTERS_LIMIT]
+        return self.title[:STR_LIMIT]
 
 
-class Location(PublishedAndCreated):
+class Location(IsPublisheCreaterAtAbstract):
     name = models.CharField(
         "Название места",
-        max_length=TEXT_FIELD_LIMIT,
+        max_length=CHAR_LIMIT,
     )
 
     class Meta:
@@ -57,13 +57,13 @@ class Location(PublishedAndCreated):
         verbose_name = "местоположение"
 
     def __str__(self):
-        return self.name[:LETTERS_LIMIT]
+        return self.name[:STR_LIMIT]
 
 
-class Post(PublishedAndCreated):
+class Post(IsPublisheCreaterAtAbstract):
     title = models.CharField(
         "Заголовок",
-        max_length=TEXT_FIELD_LIMIT,
+        max_length=CHAR_LIMIT,
     )
     text = models.TextField(
         "Текст"
@@ -103,4 +103,4 @@ class Post(PublishedAndCreated):
         ordering = ("-pub_date",)
 
     def __str__(self):
-        return self.title[:LETTERS_LIMIT]
+        return self.title[:STR_LIMIT]
